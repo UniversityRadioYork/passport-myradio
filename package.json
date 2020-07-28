@@ -1,6 +1,6 @@
 {
   "name": "@ury1350/passport-myradio",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Passport strategy for MyRadio",
   "main": "dist/index.js",
   "license": "MIT",
