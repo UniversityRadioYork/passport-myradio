@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Remove accidental debugging log
+
 ## 1.0.2
 
 * Add `enforceRedirect` option
