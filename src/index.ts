@@ -1,5 +1,6 @@
 import * as Strategy from "passport-strategy";
 import got from "got";
+import * as url from "url";
 
 /// <reference types="express" />
 import express = require('express');
@@ -14,6 +15,7 @@ interface MyRadioStrategyConfig {
     loginCallbackUrl: string;
     mixins?: Array<"officerships" | "all_officerships" | "personal_data" | "training" | "shows" | "payment">;
     userAgent?: string;
+    enforceRedirect?: boolean;
 }
 
 type VerifyFunc = (user: MyRadioUser, cb: (err?: Error, user?: any, info?: any) => void) => any;
@@ -25,6 +27,11 @@ class MyRadioStrategy extends Strategy.Strategy {
 
     async authenticate(req: express.Request, options: any) {
         if (!("cookie" in req.headers && (req.headers.cookie?.indexOf("PHPSESSID") || -1) > -1)) {
+            this.redirect(this.conf.myradioBaseUrl + "/MyRadio/login?next=" + encodeURIComponent(this.conf.loginCallbackUrl));
+            return;
+        }
+
+        if (this.conf.enforceRedirect && !req.path.endsWith(url.parse(this.conf.loginCallbackUrl).pathname || "")) {
             this.redirect(this.conf.myradioBaseUrl + "/MyRadio/login?next=" + encodeURIComponent(this.conf.loginCallbackUrl));
             return;
         }

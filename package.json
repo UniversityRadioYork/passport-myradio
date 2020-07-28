@@ -4,6 +4,9 @@
   "description": "Passport strategy for MyRadio",
   "main": "dist/index.js",
   "license": "MIT",
+  "scripts": {
+    "prepublish": "tsc"
+  },
   "dependencies": {
     "got": "^11.5.1",
     "lodash": "^4.17.19",
