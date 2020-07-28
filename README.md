@@ -11,12 +11,14 @@ This module only works if your app is running on ury.org.uk or *.ury.org.uk.
 
 ## Usage
 
-(This guide assumes you already have a working Express/Passport app.)
-
 Add passport-myradio:
 
 ```js
+const express = require("express");
+const passport = require("passport");
 const MyRadioStrategy = require("@ury1350/passport-myradio");
+
+const app = express();
 
 passport.use("myradio", new MyRadioStrategy({
   myradioBaseUrl: "https://ury.org.uk/myradio",
