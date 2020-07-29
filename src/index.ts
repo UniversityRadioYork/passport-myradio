@@ -16,6 +16,7 @@ interface MyRadioStrategyConfig {
     mixins?: Array<"officerships" | "all_officerships" | "personal_data" | "training" | "shows" | "payment">;
     userAgent?: string;
     enforceRedirect?: boolean;
+    failureMode?: "redirect" | "fail";
 }
 
 type VerifyFunc = (user: MyRadioUser, cb: (err?: Error, user?: any, info?: any) => void) => any;
@@ -25,14 +26,22 @@ class MyRadioStrategy extends Strategy.Strategy {
         super();
     }
 
+    private failOrRedirect() {
+        if (this.conf.failureMode === "fail") {
+            this.fail({ message: "oh no" }, 401);
+        } else {
+            this.redirect(this.conf.myradioBaseUrl + "/MyRadio/login?next=" + encodeURIComponent(this.conf.loginCallbackUrl));
+        }
+    }
+
     async authenticate(req: express.Request, options: any) {
         if (!("cookie" in req.headers && (req.headers.cookie?.indexOf("PHPSESSID") || -1) > -1)) {
-            this.redirect(this.conf.myradioBaseUrl + "/MyRadio/login?next=" + encodeURIComponent(this.conf.loginCallbackUrl));
+            this.failOrRedirect();
             return;
         }
 
         if (this.conf.enforceRedirect && !req.path.endsWith(url.parse(this.conf.loginCallbackUrl).pathname || "")) {
-            this.redirect(this.conf.myradioBaseUrl + "/MyRadio/login?next=" + encodeURIComponent(this.conf.loginCallbackUrl));
+            this.failOrRedirect();
             return;
         }
 
@@ -54,12 +63,13 @@ class MyRadioStrategy extends Strategy.Strategy {
             payload: string
         }>();
         if (userInfo.status !== "OK") {
+            // Not calling failOrRedirect as this is probably a misconfiguration
             this.error(new Error(userInfo.payload));
             return;
         }
 
         if (userInfo.payload === null) {
-            this.redirect(this.conf.myradioBaseUrl + "/MyRadio/login?next=" + encodeURIComponent(this.conf.loginCallbackUrl));
+            this.failOrRedirect();
             return;
         }
 
