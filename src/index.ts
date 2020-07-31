@@ -35,7 +35,13 @@ class MyRadioStrategy extends Strategy.Strategy {
     }
 
     async authenticate(req: express.Request, options: any) {
-        if (!("cookie" in req.headers && (req.headers.cookie?.indexOf("PHPSESSID") || -1) > -1)) {
+        if (!("cookie" in req.headers)) {
+            this.failOrRedirect();
+            return;
+        }
+
+        const cookieHeader = req.headers.cookie!;
+        if (cookieHeader.indexOf("PHPSESSID") === -1) {
             this.failOrRedirect();
             return;
         }
