@@ -1,9 +1,30 @@
+export interface Team {
+    teamid: number;
+    name: string;
+    alias: string;
+    ordering: number;
+    description: string;
+    status: string;
+}
+
+export interface Officer {
+    officerid: number;
+    name: string;
+    alias: string;
+    team: Team;
+    ordering: number;
+    description: string;
+    status: string;
+    type: string;
+}
+
 export interface Officership {
-    officerid: string;
-    officer_name: string;
-    teamid: string;
+    id: string;
+    member: User;
+    officer: Officer;
     from_date: string;
     till_date: string;
+    officer_name: string;
 }
 
 export interface Paid {
@@ -114,15 +135,7 @@ export interface Payment {
     paid: string;
 }
 
-export interface MyRadioUser {
-    memberid: number;
-    fname: string;
-    sname: string;
-    public_email: string;
-    url: string;
-    receive_email: boolean;
-    photo: string;
-    bio: string;
+export interface MyRadioUser extends User {
     officerships?: Officership[];
     paid?: Paid[];
     locked?: boolean;
